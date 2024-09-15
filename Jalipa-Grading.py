@@ -40,17 +40,16 @@ def home_html(result_message):
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, intial-scale=1.0">
         <title>Grade Compution</title>
-        <style>
+        <style>        
         body {{
             margin: 0;
             padding: 0;
-            font-family: Tahoma;
-            background: #f0f0f0;
+            background: #51e2f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: #333
+            color: #333;
         }}           
         
         .container {{
@@ -64,14 +63,16 @@ def home_html(result_message):
         }}
         
         h1 {{
-            color: #333;
-            font-size: 28px;
+            color: #F53473;
+            font-size: 50px;
+            font-family: 'Brush Script MT', cursive;
             margin-bottom: 20px;
         }}
         
         input[type="text1"], input[type="text"], input[type="submit"] {{
             width: 100%;
             padding: 12px;
+            font-family: Tahoma;
             margin: 10px 0;
             border-radius: 5px;
             border: 1px solid #ccc;
@@ -99,7 +100,7 @@ def home_html(result_message):
         }}
         
         input[type="submit"] {{
-          background-color: #007bff;
+          background-color: #ffa8B6;
           color: white;
           border: none;
           cursor: pointer;
@@ -107,8 +108,8 @@ def home_html(result_message):
           transition: background-color 0.3s ease;  
         }}
         
-        inpiut[type="submit"]:hover {{
-            background-color: #0056b3
+        input[type="submit"]:hover {{
+            background-color: #0056b3;
         }}
         
         .result {{
@@ -140,4 +141,3 @@ def home_html(result_message):
     
 if __name__ == '__main__':
     app.run(debug=True)
-    
