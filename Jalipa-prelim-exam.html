@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Grade Calculator</title>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #51e2f5; 
+            color: #333; 
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px; 
+            width: 90%; 
+            max-width: 1000px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #F53473; 
+            font-family: 'Brush Script MT', cursive;
+        }
+
+        form, div {
+            background-color: #ffffff; 
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            width: 100%;
+            max-width: 500px;
+            border: 2px solid #ff66b2; 
+        }
+
+        label {
+            font-size: 16px;
+            color: #333333; /* Darker label color */
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ff66b2; /* Pink border */
+            border-radius: 4px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            background-color: #fafafa; 
+            color: #333333; 
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: white; 
+            background-color: #ffa8b6; 
+            border: 2px solid; 
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;         
+        }
+
+        #result, #result2 {
+            display: none;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #333333; /* Darker text color */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- First form from index (1).html -->
+        <div>
+            <h1>Grade Calculator - Detailed Inputs</h1>
+            <input type="number" id="attendance" placeholder="Number of Absences" />
+            <input type="number" id="recitation" placeholder="Recitation" />
+            <input type="number" id="quiz" placeholder="Quiz" />
+            <input type="number" id="requirements" placeholder="Requirements" />
+            <input type="number" id="prelim_exam" placeholder="Prelim Exam" />
+            <button id="calculateButton">Calculate Grades</button>
+            <p id="result"></p>
+        </div>
+
+        <!-- Second form from index.html -->
+        <form id="gradeForm">
+            <h1>Grade Calculator - Prelim Overview</h1>
+            <label for="prelim">Enter the Prelim Grade:</label>
+            <input type="number" id="prelim" name="prelim" step="0.01" min="0" max="100" required>
+            <button type="button" id="calculateBtn">Calculate</button>
+
+            <!-- Result section with ul and li tags -->
+            <div id="result2">
+                <ul>
+                    <li><strong>Prelim Grade:</strong> <span id="prelimGrade"></span></li>
+                    <li><strong>Required Midterm Grade (to pass with 75%):</strong> <span id="midtermGrade75"></span></li>
+                    <li><strong>Required Final Grade (to pass with 75%):</strong> <span id="finalGrade75"></span></li>
+                    <li><strong>Required Midterm Grade (to achieve 90%):</strong> <span id="midtermGrade90"></span></li>
+                    <li><strong>Required Final Grade (to achieve 90%):</strong> <span id="finalGrade90"></span></li>
+                    <li id="passMessage"></li>
+                    <li id="deansMessage"></li>
+                </ul>
+            </div>
+        </form>
+    </div>
+
+    <!-- PyScript for both functionalities -->
+    <py-script>
+        from pyscript import Element
+
+        def calculate_grades(event):
+            try:
+                # Get the number of absences
+                absences = int(Element("attendance").element.value)
+                if absences >= 4:
+                    Element("result").write("FAILED due to excessive absences.")
+                    Element("result").element.style.display = "block"
+                    return
+
+                # Calculate attendance score (starting from 100, subtracting 10 for each absence)
+                attendance_score = 100 - (absences * 10)
+
+                # Calculate other grades based on input
+                recitation = float(Element("recitation").element.value) * 0.4
+                quiz = float(Element("quiz").element.value) * 0.3
+                requirements = float(Element("requirements").element.value) * 0.3
+                prelim_exam = float(Element("prelim_exam").element.value) * 0.6
+
+                performance_task = recitation + quiz + requirements
+                overall_performance = performance_task * 0.3
+
+                prelim_grade = round((attendance_score * 0.1) + overall_performance + prelim_exam, 2)
+
+                result_text = f"Your Prelim Grade is: {prelim_grade:.2f}"
+
+                Element("result").write(result_text)
+                Element("result").element.style.display = "block"
+            except ValueError:
+                Element("result").write("Invalid input. Please enter numbers only.")
+                Element("result").element.style.display = "block"
+
+        def calculate_prelim(event):
+            prelim = float(Element("prelim").value)
+            passing_grade = 75
+            deans_lister_grade = 90
+
+            prelim_percent = 0.20
+            midterm_percent = 0.30
+            final_percent = 0.50
+
+            current_total = prelim * prelim_percent
+            required_total_75 = passing_grade - current_total
+            required_total_90 = deans_lister_grade - current_total
+
+            # Calculate required midterm and final grades for 75% and 90%
+            required_midterm_and_final_75 = required_total_75 / (midterm_percent + final_percent)
+            required_midterm_and_final_90 = required_total_90 / (midterm_percent + final_percent)
+
+            # Display result for passing message
+            if required_total_75 > 0:
+                pass_message = "You have a chance to pass!" if required_midterm_and_final_75 <= 90 else "It is difficult to pass."
+            else:
+                pass_message = "Your current grade is high enough to pass!"
+
+            # Display required grades for Dean's Lister
+            if prelim >= deans_lister_grade:
+                deans_message = "You already qualify for Dean's Lister!"
+            else:
+                deans_message = (
+                    f"You need a Midterm grade of {required_midterm_and_final_90:.2f}% "
+                    f"and a Final grade of {required_midterm_and_final_90:.2f}% to qualify for Dean's Lister."
+                )
+
+            # Update the content of the result elements
+            Element("prelimGrade").write(f"{prelim:.2f}%")
+            Element("midtermGrade75").write(f"{required_midterm_and_final_75:.2f}%")
+            Element("finalGrade75").write(f"{required_midterm_and_final_75:.2f}%")
+            Element("midtermGrade90").write(f"{required_midterm_and_final_90:.2f}%")
+            Element("finalGrade90").write(f"{required_midterm_and_final_90:.2f}%")
+            Element("passMessage").write(pass_message)
+            Element("deansMessage").write(deans_message)
+
+            Element("result2").element.style.display = "block"
+
+        Element("calculateButton").element.onclick = calculate_grades
+        Element("calculateBtn").element.onclick = calculate_prelim
+    </py-script>
+</body>
+</html>
